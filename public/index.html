@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard de Marketing Email</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .metric-card {
+            @apply bg-white rounded-lg shadow p-6;
+        }
+        .metric-value {
+            @apply text-3xl font-bold text-blue-600;
+        }
+        .metric-label {
+            @apply text-gray-600 text-sm;
+        }
+        .chart-container {
+            height: 300px;
+            @apply bg-white rounded-lg shadow p-4 mt-4;
+        }
+        #dashboardContainer {
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-2xl font-bold mb-6">Dashboard de Marketing Email</h1>
+        
+        <!-- Formulario de carga -->
+        <form id="uploadForm" class="mb-8">
+            <div class="flex items-center space-x-4">
+                <input type="file" id="fileInput" name="file" accept=".xlsx, .xls" 
+                       class="border p-2 rounded">
+                <button type="submit" 
+                        class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                    Subir Archivo
+                </button>
+            </div>
+        </form>
+
+        <!-- Contenedor del Dashboard -->
+        <div id="dashboardContainer" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <!-- Métricas principales -->
+            <div class="metric-card">
+                <div class="metric-value" id="openRate">-</div>
+                <div class="metric-label">Tasa de Apertura</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value" id="bounceRate">-</div>
+                <div class="metric-label">Tasa de Rebote</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value" id="clickRate">-</div>
+                <div class="metric-label">Tasa de Click</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value" id="unsubRate">-</div>
+                <div class="metric-label">Tasa de Baja</div>
+            </div>
+
+            <!-- Gráficos -->
+            <div class="chart-container">
+                <h3 class="text-lg font-semibold mb-4">Estado de Envío</h3>
+                <canvas id="deliveryChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <h3 class="text-lg font-semibold mb-4">Engagement</h3>
+                <canvas id="engagementChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <h3 class="text-lg font-semibold mb-4">Tipos de Rebote</h3>
+                <canvas id="bounceChart"></canvas>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

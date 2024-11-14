@@ -8,6 +8,7 @@ document.getElementById('uploadForm').addEventListener('submit', async (event) =
             body: formData
         });
         const data = await response.json();
+        generateTabs(data);
         generateDashboard(data);
         document.getElementById('dashboardContainer').classList.remove('hidden');
     } catch (error) {
@@ -15,6 +16,35 @@ document.getElementById('uploadForm').addEventListener('submit', async (event) =
         alert('Error al procesar el archivo');
     }
 });
+
+function generateTabs(data) {
+    const tabsContainer = document.getElementById('tabsContainer');
+    tabsContainer.innerHTML = '';
+
+    const emailNames = [...new Set(data.map(row => row.EmailName.split('-')[2]))];
+    emailNames.forEach(name => {
+        const tab = document.createElement('div');
+        tab.classList.add('tab');
+        tab.textContent = `BR-EMM-${name}-SKY+`;
+        tab.addEventListener('click', () => {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            const filteredData = data.filter(row => row.EmailName.startsWith(`BR-EMM-${name}-SKY+`));
+            generateDashboard(filteredData);
+        });
+        tabsContainer.appendChild(tab);
+    });
+
+    const generalTab = document.createElement('div');
+    generalTab.classList.add('tab', 'active');
+    generalTab.textContent = 'General';
+    generalTab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        generalTab.classList.add('active');
+        generateDashboard(data);
+    });
+    tabsContainer.appendChild(generalTab);
+}
 
 function generateDashboard(data) {
     const metrics = calculateMetrics(data);

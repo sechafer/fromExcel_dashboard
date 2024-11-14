@@ -27,11 +27,17 @@ app.post('/upload', upload.single('file'), (req, res) => {
             const dateMap = new Map();
 
             jsonData.forEach(row => {
-                const date = row.sentdate.split(" ")[0]; // Tomamos solo la fecha
+                const date = row.sentdate?.split(" ")[0] || ''; // Tomamos solo la fecha
                 if (!dateMap.has(date)) {
                     dateMap.set(date, {
-                        total: 0, opened: 0, bounced: 0, clicked: 0, unsubscribed: 0,
-                        hardBounces: 0, softBounces: 0, technicalBounces: 0
+                        total: 0, 
+                        opened: 0, 
+                        bounced: 0, 
+                        clicked: 0, 
+                        unsubscribed: 0,
+                        hardBounces: 0, 
+                        softBounces: 0, 
+                        technicalBounces: 0
                     });
                 }
 

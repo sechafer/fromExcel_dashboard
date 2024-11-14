@@ -18,32 +18,65 @@ document.getElementById('uploadForm').addEventListener('submit', async (event) =
 });
 
 function generateTabs(data) {
+    const tabList = document.createElement('ul');
+    tabList.className = 'tab-list';
+    
+    // Obtener nombres únicos de emails y crear tabs
+    const emailNames = [...new Set(data.map(row => {
+        const parts = row.EmailName?.split('-') || [];
+        return parts[2] || '';
+    }))].filter(Boolean); // Filtrar valores vacíos
+
+    // Si solo hay un caso o ninguno, mostrar solo la pestaña General
+    if (emailNames.length <= 1) {
+        const generalTab = createTab('General', true);
+        generalTab.addEventListener('click', () => {
+            setActiveTab(generalTab);
+            generateDashboard(data);
+        });
+        tabList.appendChild(generalTab);
+    } else {
+        // Si hay múltiples casos, mostrar todas las pestañas
+        const generalTab = createTab('General', true);
+        generalTab.addEventListener('click', () => {
+            setActiveTab(generalTab);
+            generateDashboard(data);
+        });
+        tabList.appendChild(generalTab);
+
+        emailNames.forEach(name => {
+            const tab = createTab(`BR-EMM-${name}-SKY+`);
+            tab.addEventListener('click', () => {
+                setActiveTab(tab);
+                const filteredData = data.filter(row => 
+                    row.EmailName?.startsWith(`BR-EMM-${name}-SKY+`)
+                );
+                generateDashboard(filteredData);
+            });
+            tabList.appendChild(tab);
+        });
+    }
+
+    // Limpiar y agregar nueva lista de tabs
     const tabsContainer = document.getElementById('tabsContainer');
     tabsContainer.innerHTML = '';
+    tabsContainer.appendChild(tabList);
+}
 
-    const emailNames = [...new Set(data.map(row => row.EmailName.split('-')[2]))];
-    emailNames.forEach(name => {
-        const tab = document.createElement('div');
-        tab.classList.add('tab');
-        tab.textContent = `BR-EMM-${name}-SKY+`;
-        tab.addEventListener('click', () => {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            tab.classList.add('active');
-            const filteredData = data.filter(row => row.EmailName.startsWith(`BR-EMM-${name}-SKY+`));
-            generateDashboard(filteredData);
-        });
-        tabsContainer.appendChild(tab);
-    });
+function createTab(text, isActive = false) {
+    const li = document.createElement('li');
+    li.className = `tab ${isActive ? 'active' : ''}`;
+    li.textContent = text;
+    return li;
+}
 
-    const generalTab = document.createElement('div');
-    generalTab.classList.add('tab', 'active');
-    generalTab.textContent = 'General';
-    generalTab.addEventListener('click', () => {
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        generalTab.classList.add('active');
-        generateDashboard(data);
+function setActiveTab(activeTab) {
+    // Remover clase active de todas las tabs
+    document.querySelectorAll('.tab').forEach(tab => {
+        tab.classList.remove('active');
     });
-    tabsContainer.appendChild(generalTab);
+    // Agregar clase active a la tab seleccionada
+    activeTab.classList.add('active');
 }
 
 function generateDashboard(data) {
@@ -53,7 +86,7 @@ function generateDashboard(data) {
 }
 
 function calculateMetrics(data) {
-    const totalEmails = data.length - 1;
+    const totalEmails = data.length;
     const opened = data.filter(row => row.opendate).length;
     const bounced = data.filter(row => row.bouncedate).length;
     const clicked = data.filter(row => row.clickdate).length;
@@ -72,10 +105,10 @@ function calculateMetrics(data) {
         softBounces,
         technicalBounces,
         metrics: {
-            openRate: ((opened / totalEmails) * 100).toFixed(1),
+            openRate: ((opened / (totalEmails - bounced)) * 100).toFixed(1),
             bounceRate: ((bounced / totalEmails) * 100).toFixed(1),
             clickRate: ((clicked / opened) * 100).toFixed(1),
-            unsubRate: ((unsubscribed / totalEmails) * 100).toFixed(1)
+            unsubRate: ((unsubscribed / (totalEmails - bounced)) * 100).toFixed(1)
         }
     };
 }
@@ -88,9 +121,22 @@ function updateMetricDisplays(metrics) {
 }
 
 function createCharts(metrics) {
+    // Destruir gráficos existentes si los hay
+    ['deliveryChart', 'engagementChart', 'bounceChart'].forEach(chartId => {
+        const chartInstance = Chart.getChart(chartId);
+        if (chartInstance) {
+            chartInstance.destroy();
+        }
+    });
+
     const chartOptions = {
         responsive: true,
-        maintainAspectRatio: false
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'bottom'
+            }
+        }
     };
 
     // Gráfico de Estado de Envío (Donut)
@@ -103,13 +149,7 @@ function createCharts(metrics) {
                 backgroundColor: ['#0088FE', '#FF8042']
             }]
         },
-        options: {
-            ...chartOptions,
-            plugins: {
-                tooltip: { enabled: true },
-                datalabels: { formatter: (value) => `${value}%`, color: '#fff' }
-            }
-        }
+        options: chartOptions
     });
 
     // Gráfico de Engagement (Barras horizontales)
@@ -124,7 +164,12 @@ function createCharts(metrics) {
         },
         options: {
             ...chartOptions,
-            indexAxis: 'y'
+            indexAxis: 'y',
+            scales: {
+                x: {
+                    beginAtZero: true
+                }
+            }
         }
     });
 
@@ -132,7 +177,7 @@ function createCharts(metrics) {
     new Chart(document.getElementById('bounceChart'), {
         type: 'doughnut',
         data: {
-            labels: ['Hard Bounce', 'Soft Bounce', 'Technical/Other Bounce'],
+            labels: ['Hard Bounce', 'Soft Bounce', 'Technical/Other'],
             datasets: [{
                 data: [metrics.hardBounces, metrics.softBounces, metrics.technicalBounces],
                 backgroundColor: ['#FF8042', '#FFBB28', '#FF4500']

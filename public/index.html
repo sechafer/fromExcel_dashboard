@@ -4,34 +4,57 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard de Marketing Email</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        .metric-card {
-            @apply bg-white rounded-lg shadow p-6;
+        .tabs-container {
+            border-bottom: 1px solid #e5e7eb;
+            margin-bottom: 1rem;
+            overflow-x: auto;
+            white-space: nowrap;
         }
+
+        .tab-list {
+            display: flex;
+            gap: 1rem;
+            padding: 0;
+            margin: 0;
+            list-style: none;
+        }
+
+        .tab {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            color: #6b7280;
+        }
+
+        .tab:hover {
+            color: #3b82f6;
+        }
+
+        .tab.active {
+            color: #3b82f6;
+            border-bottom-color: #3b82f6;
+        }
+
+        .metric-card {
+            @apply bg-white rounded-lg shadow-md p-6;
+        }
+
         .metric-value {
             @apply text-3xl font-bold text-blue-600;
         }
+
         .metric-label {
-            @apply text-gray-600 text-sm;
+            @apply text-gray-600 mt-2;
         }
+
         .chart-container {
+            @apply bg-white rounded-lg shadow-md p-6 col-span-1;
             height: 300px;
-            @apply bg-white rounded-lg shadow p-4 mt-4;
-        }
-        #dashboardContainer {
-            max-height: 80vh;
-            overflow-y: auto;
-        }
-        .tabs {
-            @apply flex space-x-4 mb-4;
-        }
-        .tab {
-            @apply cursor-pointer px-4 py-2 rounded;
-        }
-        .tab.active {
-            @apply bg-blue-500 text-white;
         }
     </style>
 </head>
@@ -39,50 +62,57 @@
     <div class="container mx-auto px-4 py-8">
         <h1 class="text-2xl font-bold mb-6">Dashboard de Marketing Email</h1>
 
-        <!-- Formulario de carga -->
-        <form id="uploadForm" class="mb-8">
-            <div class="flex items-center space-x-4">
-                <input type="file" id="fileInput" name="file" accept=".xlsx, .xls"
-                       class="border p-2 rounded">
-                <button type="submit"
-                        class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+        <div class="mb-6">
+            <form id="uploadForm" class="flex items-center space-x-4">
+                <input type="file" name="file" accept=".xlsx,.xls" class="block w-full text-sm text-gray-500
+                    file:mr-4 file:py-2 file:px-4
+                    file:rounded-full file:border-0
+                    file:text-sm file:font-semibold
+                    file:bg-blue-50 file:text-blue-700
+                    hover:file:bg-blue-100">
+                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
                     Subir Archivo
                 </button>
-            </div>
-        </form>
+            </form>
+        </div>
 
-        <!-- Pestañas -->
-        <div class="tabs" id="tabsContainer"></div>
+        <div id="tabsContainer" class="tabs-container">
+            <ul class="tab-list">
+                <!-- Las tabs se generarán dinámicamente aquí -->
+            </ul>
+        </div>
 
-        <!-- Contenedor del Dashboard -->
         <div id="dashboardContainer" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <!-- Métricas principales -->
             <div class="metric-card">
-                <div class="metric-value" id="openRate">-</div>
+                <div id="openRate" class="metric-value">-</div>
                 <div class="metric-label">Tasa de Apertura</div>
             </div>
+
             <div class="metric-card">
-                <div class="metric-value" id="bounceRate">-</div>
+                <div id="bounceRate" class="metric-value">-</div>
                 <div class="metric-label">Tasa de Rebote</div>
             </div>
+
             <div class="metric-card">
-                <div class="metric-value" id="clickRate">-</div>
+                <div id="clickRate" class="metric-value">-</div>
                 <div class="metric-label">Tasa de Click</div>
             </div>
+
             <div class="metric-card">
-                <div class="metric-value" id="unsubRate">-</div>
+                <div id="unsubRate" class="metric-value">-</div>
                 <div class="metric-label">Tasa de Baja</div>
             </div>
 
-            <!-- Gráficos -->
             <div class="chart-container">
                 <h3 class="text-lg font-semibold mb-4">Estado de Envío</h3>
                 <canvas id="deliveryChart"></canvas>
             </div>
+
             <div class="chart-container">
                 <h3 class="text-lg font-semibold mb-4">Engagement</h3>
                 <canvas id="engagementChart"></canvas>
             </div>
+
             <div class="chart-container">
                 <h3 class="text-lg font-semibold mb-4">Tipos de Rebote</h3>
                 <canvas id="bounceChart"></canvas>

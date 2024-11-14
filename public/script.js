@@ -30,6 +30,7 @@ function calculateMetrics(data) {
     const unsubscribed = data.filter(row => row.unsubscribedate).length;
     const hardBounces = data.filter(row => row.bouncecategory === 'Hard bounce').length;
     const softBounces = data.filter(row => row.bouncecategory === 'Soft bounce').length;
+    const technicalBounces = data.filter(row => row.bouncecategory === 'Technical/Other bounce').length;
 
     return {
         totalEmails,
@@ -39,6 +40,7 @@ function calculateMetrics(data) {
         unsubscribed,
         hardBounces,
         softBounces,
+        technicalBounces,
         metrics: {
             openRate: ((opened / totalEmails) * 100).toFixed(1),
             bounceRate: ((bounced / totalEmails) * 100).toFixed(1),
@@ -100,10 +102,10 @@ function createCharts(metrics) {
     new Chart(document.getElementById('bounceChart'), {
         type: 'doughnut',
         data: {
-            labels: ['Hard Bounce', 'Soft Bounce'],
+            labels: ['Hard Bounce', 'Soft Bounce', 'Technical/Other Bounce'],
             datasets: [{
-                data: [metrics.hardBounces, metrics.softBounces],
-                backgroundColor: ['#FF8042', '#FFBB28']
+                data: [metrics.hardBounces, metrics.softBounces, metrics.technicalBounces],
+                backgroundColor: ['#FF8042', '#FFBB28', '#FF4500']
             }]
         },
         options: chartOptions

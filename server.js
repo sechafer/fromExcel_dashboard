@@ -15,7 +15,7 @@ app.post('/upload', upload.single('file'), (req, res) => {
         const workbook = XLSX.readFile(filePath);
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
-        
+
         // Conversión de la hoja de Excel a JSON
         let jsonData = XLSX.utils.sheet_to_json(worksheet, {
             raw: false,
@@ -29,9 +29,9 @@ app.post('/upload', upload.single('file'), (req, res) => {
             jsonData.forEach(row => {
                 const date = row.sentdate.split(" ")[0]; // Tomamos solo la fecha
                 if (!dateMap.has(date)) {
-                    dateMap.set(date, { 
-                        total: 0, opened: 0, bounced: 0, clicked: 0, unsubscribed: 0, 
-                        hardBounces: 0, softBounces: 0 
+                    dateMap.set(date, {
+                        total: 0, opened: 0, bounced: 0, clicked: 0, unsubscribed: 0,
+                        hardBounces: 0, softBounces: 0, technicalBounces: 0
                     });
                 }
 
@@ -42,6 +42,7 @@ app.post('/upload', upload.single('file'), (req, res) => {
                     dateData.bounced++;
                     if (row.bouncecategory === 'Hard bounce') dateData.hardBounces++;
                     else if (row.bouncecategory === 'Soft bounce') dateData.softBounces++;
+                    else if (row.bouncecategory === 'Technical/Other bounce') dateData.technicalBounces++;
                 }
                 if (row.clickdate) dateData.clicked++;
                 if (row.unsubscribedate) dateData.unsubscribed++;

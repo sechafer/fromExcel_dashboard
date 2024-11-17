@@ -6,7 +6,7 @@ This project was developed to address a real business need at Sky, where the mar
 
 [Live Demo](https://fromexcel-dashboard.onrender.com/)
 
-[Video Demo](https://youtu.be/dV9bPVBVF0Q)
+[Video Demo](https://youtu.be/JR7PqFjGIz0)
 
 The dashboard provides essential email marketing metrics including:
 - Open rates
@@ -75,7 +75,7 @@ The dashboard provides essential email marketing metrics including:
 
 ## Project Demo
 
-Watch our [Video Demonstration](https://youtu.be/dV9bPVBVF0Q) to see the dashboard in action and learn how to:
+Watch our [Video Demonstration](https://youtu.be/JR7PqFjGIz0) to see the dashboard in action and learn how to:
 - Upload Excel files
 - Navigate the dashboard interface
 - Interpret the visualizations

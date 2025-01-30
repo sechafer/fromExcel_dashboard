@@ -8,7 +8,7 @@ The purpose of this software is to provide marketing teams with an efficient way
 
 Try it out here: [Live Demo](https://fromexcel-dashboard.onrender.com/)
 
-[Software Demo Video](https://youtu.be/dV9bPVBVF0Q)
+[Software Demo Video](https://youtu.be/JR7PqFjGIz0)
 
 # Development Environment
 
